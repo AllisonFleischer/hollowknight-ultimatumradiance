@@ -19,7 +19,7 @@ namespace UltimatumRadiance
         private Recoil _recoil;
 
         private PlayMakerFSM _attackChoices;
-        private PlayMakerFSM _balloons;
+        private PlayMakerFSM _attackCommands;
         private PlayMakerFSM _control;
 
         private void Awake()
@@ -30,16 +30,22 @@ namespace UltimatumRadiance
             
             _hm = gameObject.GetComponent<HealthManager>();
             _attackChoices = gameObject.LocateMyFSM("Attack Choices");
+            _attackCommands = gameObject.LocateMyFSM("Attack Commands");
             //_balloons = gameObject.LocateMyFSM("Spawn Balloon");
             _anim = gameObject.GetComponent<tk2dSpriteAnimator>();
-            //_control = gameObject.LocateMyFSM("IK Control");
+            _control = gameObject.LocateMyFSM("Control");
             _recoil = gameObject.GetComponent<Recoil>();
         }
 
         private void Start()
         {
             //_attackChoices.GetAction<SendRandomEventV3>("A1 Choice", 1).weights = new FsmFloat[] { 0, 0, 0, 0, 1, 0, 0, 0, 0 };
-            _attackChoices.GetAction<Wait>("Orb Recover", 0).time = 10;
+            _attackChoices.GetAction<Wait>("Orb Recover", 0).time = 0.01f;
+            _attackCommands.GetAction<Wait>("Orb Pause", 0).time = 0.01f;
+            //_control.GetAction<Wait>("A1 Cast End", 1).time = 10;
+
+            _attackCommands.GetAction<Wait>("CW Restart", 1).time = 5;
+            _attackCommands.GetAction<Wait>("CCW Restart", 1).time = 5;
 
             /*// Decrease idles
             _control.GetAction<WaitRandom>("Idle", 5).timeMax = 0.01f;
