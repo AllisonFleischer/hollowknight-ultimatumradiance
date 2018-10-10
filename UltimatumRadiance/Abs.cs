@@ -59,6 +59,12 @@ namespace UltimatumRadiance
             _attackCommands.RemoveAction("CW Restart", 1); //Go straight into the next wave of nails, no delay
             _attackCommands.RemoveAction("CCW Restart", 1);
 
+            //GIANT BEAM SWEEP
+            //Note: Logic for spawning the second beam is found in the AbsFinder class.
+            //The attached MonoBehaviour for reversing its direction is in BeamSweeperClone.
+            _attackChoices.GetAction<Wait>("Beam Sweep L", 0).time = 4f; //Wait longer because this attack is a lot more demanding now
+            _attackChoices.GetAction<Wait>("Beam Sweep R", 0).time = 4f;
+
             /*// Decrease idles
             _control.GetAction<WaitRandom>("Idle", 5).timeMax = 0.01f;
             _control.GetAction<WaitRandom>("Idle", 5).timeMin = 0.001f;

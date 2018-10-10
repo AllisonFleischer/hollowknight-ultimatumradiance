@@ -51,6 +51,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BeamSweeperClone.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="FsmUtil.cs" />
     <Compile Include="Abs.cs" />
