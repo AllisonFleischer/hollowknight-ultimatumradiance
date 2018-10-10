@@ -39,13 +39,18 @@ namespace UltimatumRadiance
 
         private void Start()
         {
-            //_attackChoices.GetAction<SendRandomEventV3>("A1 Choice", 1).weights = new FsmFloat[] { 0, 0, 0, 0, 1, 0, 0, 0, 0 };
-            _attackChoices.GetAction<Wait>("Orb Recover", 0).time = 0.01f;
-            _attackCommands.GetAction<Wait>("Orb Pause", 0).time = 0.01f;
+            _attackCommands.GetAction<Wait>("Orb Antic", 0).time = .75f; //INCREASE wait time at start of orb barrage, to increase chance player isn't in a nail wall or something
+            _attackCommands.GetAction<SetIntValue>("Orb Antic", 1).intValue = 7; //Spawn more orbs
+            _attackCommands.GetAction<RandomInt>("Orb Antic", 2).min = 6;
+            _attackCommands.GetAction<RandomInt>("Orb Antic", 2).max = 8;
+            _attackCommands.GetAction<Wait>("Orb Summon", 2).time = 0.40f; //Decrease telegraph time to spawn orb
+            _attackCommands.GetAction<Wait>("Orb Pause", 0).time = 0.01f; //Remove time to start spawning new orb
             //_control.GetAction<Wait>("A1 Cast End", 1).time = 10;
 
-            _attackCommands.GetAction<Wait>("CW Restart", 1).time = 5;
-            _attackCommands.GetAction<Wait>("CCW Restart", 1).time = 5;
+            //_attackCommands.CopyState("Orb Pos", "Orb Pos 2");
+
+            _attackCommands.GetAction<Wait>("CW Restart", 1).time = 5f;
+            _attackCommands.GetAction<Wait>("CCW Restart", 1).time = 5f;
 
             /*// Decrease idles
             _control.GetAction<WaitRandom>("Idle", 5).timeMax = 0.01f;
