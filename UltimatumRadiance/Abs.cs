@@ -22,6 +22,8 @@ namespace UltimatumRadiance
         private PlayMakerFSM _attackCommands;
         private PlayMakerFSM _control;
 
+        private int CWRepeats = 0;
+
         private void Awake()
         {
             Log("Added AbsRad MonoBehaviour");
@@ -39,18 +41,23 @@ namespace UltimatumRadiance
 
         private void Start()
         {
+            //ORB BARRAGE
             _attackCommands.GetAction<Wait>("Orb Antic", 0).time = .75f; //INCREASE wait time at start of orb barrage, to increase chance player isn't in a nail wall or something
             _attackCommands.GetAction<SetIntValue>("Orb Antic", 1).intValue = 7; //Spawn more orbs
             _attackCommands.GetAction<RandomInt>("Orb Antic", 2).min = 6;
             _attackCommands.GetAction<RandomInt>("Orb Antic", 2).max = 8;
             _attackCommands.GetAction<Wait>("Orb Summon", 2).time = 0.40f; //Decrease telegraph time to spawn orb
             _attackCommands.GetAction<Wait>("Orb Pause", 0).time = 0.01f; //Remove time to start spawning new orb
-            //_control.GetAction<Wait>("A1 Cast End", 1).time = 10;
+            _attackChoices.GetAction<Wait>("Orb Recover", 0).time = 0.75f; //Increase downtime at the end of the barrage, just like at the start
 
-            //_attackCommands.CopyState("Orb Pos", "Orb Pos 2");
-
-            _attackCommands.GetAction<Wait>("CW Restart", 1).time = 5f;
-            _attackCommands.GetAction<Wait>("CCW Restart", 1).time = 5f;
+            //RADIAL NAIL BARRAGE
+            //Note that there's stuff in Update() below for this attack too
+            _attackCommands.GetAction<Wait>("CW Repeat", 0).time = 0.005f; //The little "spin" animation is faster
+            _attackCommands.GetAction<Wait>("CCW Repeat", 0).time = 0.005f;
+            _attackCommands.GetAction<FloatAdd>("CW Restart", 2).add = -10; //Change angle by thirds instead of halves
+            _attackCommands.GetAction<FloatAdd>("CCW Restart", 2).add = 10;
+            _attackCommands.RemoveAction("CW Restart", 1); //Go straight into the next wave of nails, no delay
+            _attackCommands.RemoveAction("CCW Restart", 1);
 
             /*// Decrease idles
             _control.GetAction<WaitRandom>("Idle", 5).timeMax = 0.01f;
@@ -146,6 +153,25 @@ namespace UltimatumRadiance
 
             Log("fin.");
 
+        }
+
+        private void Update()
+        {
+            //Silly hack to get three waves of radial nails instead of two
+            //This feels really inefficient and I basically just threw numbers at the wall until it worked but uh, whatever
+            if (_attackCommands.FsmVariables.GetFsmBool("Repeated").Value) {
+                switch (CWRepeats)
+                {
+                    case 0:
+                        CWRepeats = 1;
+                        _attackCommands.FsmVariables.GetFsmBool("Repeated").Value = false;
+                        break;
+                    case 1:
+                        CWRepeats = 2;
+                        break;
+                }
+            }
+            else if (CWRepeats == 2) CWRepeats = 0;
         }
 
         [UsedImplicitly]
