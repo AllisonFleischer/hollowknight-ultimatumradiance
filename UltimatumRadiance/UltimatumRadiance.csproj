@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>UltimatumRadiance</RootNamespace>
-    <AssemblyName>UltimatumRadiance</AssemblyName>
+    <AssemblyName>Ultimatum Radiance</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <LangVersion>7</LangVersion>

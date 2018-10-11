@@ -89,7 +89,7 @@ namespace UltimatumRadiance
 
                     _beamsweeper2control.GetAction<SetPosition>("Beam Sweep L", 2).x = 89;
                     _beamsweeper2control.GetAction<iTweenMoveBy>("Beam Sweep L", 4).vector = new Vector3(-50, 0, 0);
-                    _beamsweeper2control.GetAction<iTweenMoveBy>("Beam Sweep L", 4).time = 10;
+                    _beamsweeper2control.GetAction<iTweenMoveBy>("Beam Sweep L", 4).time = 5;
                     _beamsweeper2control.GetAction<SetPosition>("Beam Sweep R", 3).x = 32.6f;
                     _beamsweeper2control.GetAction<iTweenMoveBy>("Beam Sweep R", 5).vector = new Vector3(50, 0, 0);
                     _beamsweeper2control.GetAction<iTweenMoveBy>("Beam Sweep R", 5).time = 5;
