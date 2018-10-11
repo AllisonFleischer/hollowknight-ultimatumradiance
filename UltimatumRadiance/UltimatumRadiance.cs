@@ -7,7 +7,7 @@ using UObject = UnityEngine.Object;
 namespace UltimatumRadiance
 {
     [UsedImplicitly]
-    public class UltimatumRadiance : Mod<UltSettings>, ITogglableMod
+    public class UltimatumRadiance : Mod, ITogglableMod
     {
         // ReSharper disable once MemberCanBePrivate.Global
         // ReSharper disable once NotAccessedField.Global
@@ -30,8 +30,8 @@ namespace UltimatumRadiance
 
         private static string LangGet(string key, string sheettitle)
         {
-            return key == "INFECTED_KNIGHT_DREAM_MAIN" && PlayerData.instance.infectedKnightDreamDefeated
-                ? "Lord"
+            return key == "ABSOLUTE_RADIANCE_SUPER"
+                ? "Ultimatum"
                 : Language.Language.GetInternal(key, sheettitle);
         }
 

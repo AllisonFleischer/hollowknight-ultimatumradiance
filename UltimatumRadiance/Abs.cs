@@ -49,12 +49,12 @@ namespace UltimatumRadiance
             //GIANT BEAM SWEEP
             //Note: Logic for spawning the second beam is found in the AbsFinder class.
             //The attached MonoBehaviour for reversing its direction is in BeamSweeperClone.
-            _attackChoices.GetAction<Wait>("Beam Sweep L", 0).time = 4f; //Wait longer because this attack is a lot more demanding now
-            _attackChoices.GetAction<Wait>("Beam Sweep R", 0).time = 4f;
+            _attackChoices.GetAction<Wait>("Beam Sweep L", 0).time = 4.05f; //Wait longer because this attack is a lot more demanding now
+            _attackChoices.GetAction<Wait>("Beam Sweep R", 0).time = 4.05f;
             _attackChoices.ChangeTransition("A1 Choice", "BEAM SWEEP R", "Beam Sweep L");
             _attackChoices.ChangeTransition("A2 Choice", "BEAM SWEEP R", "Beam Sweep L 2");
-            _attackChoices.GetAction<Wait>("Beam Sweep L 2", 0).time = 4f;
-            _attackChoices.GetAction<Wait>("Beam Sweep R 2", 0).time = 4f;
+            _attackChoices.GetAction<Wait>("Beam Sweep L 2", 0).time = 5.05f;
+            _attackChoices.GetAction<Wait>("Beam Sweep R 2", 0).time = 5.05f;
             _attackChoices.GetAction<SendEventByName>("Beam Sweep L 2", 1).sendEvent = "BEAM SWEEP L";
             _attackChoices.GetAction<SendEventByName>("Beam Sweep R 2", 1).sendEvent = "BEAM SWEEP R";
 
@@ -81,6 +81,13 @@ namespace UltimatumRadiance
             _attackCommands.GetAction<SendEventByName>("Aim", 10).delay = 0.6f;
             _attackCommands.GetAction<Wait>("Aim", 11).time = 0.625f;
             _attackCommands.GetAction<Wait>("Eb Extra Wait", 0).time = 0.05f;
+
+            //VERTICAL NAIL COMB
+            _attackChoices.GetAction<SendEventByName>("Nail Top Sweep", 1).delay = 0.25f;
+            _attackChoices.GetAction<SendEventByName>("Nail Top Sweep", 2).delay = 0.5f;
+            _attackChoices.GetAction<SendEventByName>("Nail Top Sweep", 3).delay = 0.75f;
+            _attackChoices.GetAction<Wait>("Nail Top Sweep", 4).time = 2f;
+            _control.GetAction<Wait>("Rage Comb", 0).time = 0.6f;
 
             Log("fin.");
 

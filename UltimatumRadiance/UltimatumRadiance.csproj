@@ -61,7 +61,6 @@
     <Compile Include="Abs.cs" />
     <Compile Include="AbsFinder.cs" />
     <Compile Include="UltimatumRadiance.cs" />
-    <Compile Include="UltSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
