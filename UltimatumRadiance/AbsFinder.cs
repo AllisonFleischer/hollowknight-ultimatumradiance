@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using HutongGames.PlayMaker;
 using Logger = Modding.Logger;
 
 namespace UltimatumRadiance
@@ -8,6 +9,9 @@ namespace UltimatumRadiance
         private GameObject _abs;
         private GameObject _beamsweeper;
         private GameObject _beamsweeper2;
+
+        private PlayMakerFSM _beamsweepercontrol;
+        private PlayMakerFSM _beamsweeper2control;
 
         private bool _cloned;
         private bool _assigned;
@@ -26,6 +30,7 @@ namespace UltimatumRadiance
                 _returned = false;
                 _abs = GameObject.Find("Absolute Radiance");
             }
+
             else if (!_assigned)
             {
                 _beamsweeper = GameObject.Find("Beam Sweeper");
@@ -46,7 +51,35 @@ namespace UltimatumRadiance
                 Logger.Log("[Ultimatum Radiance] Found the Radiance!");
                 _abs.AddComponent<Abs>();
                 _beamsweeper2.AddComponent<BeamSweeperClone>();
+                _beamsweepercontrol = _beamsweeper.LocateMyFSM("Control");
+                _beamsweeper2control = _beamsweeper2.LocateMyFSM("Control");
             }
+
+            else if (_beamsweeper2control != null)
+            {
+                if (_beamsweepercontrol.ActiveStateName == _beamsweeper2control.ActiveStateName)
+                {
+                    switch (_beamsweepercontrol.ActiveStateName)
+                    {
+                        case "Beam Sweep L":
+                            _beamsweeper2control.ChangeState(GetFsmEventByName(_beamsweeper2control, "BEAM SWEEP R"));
+                            break;
+                        case "Beam Sweep R":
+                            _beamsweeper2control.ChangeState(GetFsmEventByName(_beamsweeper2control, "BEAM SWEEP L"));
+                            break;
+                    }
+
+                }
+            }
+        }
+
+        private static FsmEvent GetFsmEventByName(PlayMakerFSM fsm, string eventName)
+        {
+            foreach (FsmEvent t in fsm.FsmEvents)
+            {
+                if (t.Name == eventName) return t;
+            }
+            return null;
         }
     }
 }

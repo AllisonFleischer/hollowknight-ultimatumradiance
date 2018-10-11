@@ -51,6 +51,13 @@ namespace UltimatumRadiance
             //The attached MonoBehaviour for reversing its direction is in BeamSweeperClone.
             _attackChoices.GetAction<Wait>("Beam Sweep L", 0).time = 4f; //Wait longer because this attack is a lot more demanding now
             _attackChoices.GetAction<Wait>("Beam Sweep R", 0).time = 4f;
+            _attackChoices.ChangeTransition("A1 Choice", "BEAM SWEEP R", "Beam Sweep L");
+            _attackChoices.ChangeTransition("A2 Choice", "BEAM SWEEP R", "Beam Sweep L 2");
+            _attackChoices.GetAction<Wait>("Beam Sweep L 2", 0).time = 4f;
+            _attackChoices.GetAction<Wait>("Beam Sweep R 2", 0).time = 4f;
+            _attackChoices.GetAction<SendEventByName>("Beam Sweep L 2", 1).sendEvent = "BEAM SWEEP L";
+            _attackChoices.GetAction<SendEventByName>("Beam Sweep R 2", 1).sendEvent = "BEAM SWEEP R";
+
 
             //RADIAL BEAM BARRAGE
             _attackCommands.GetAction<SendEventByName>("EB 1", 9).delay = 0.525f; //Reduce the time the beam is active for
@@ -71,6 +78,8 @@ namespace UltimatumRadiance
             _attackCommands.GetAction<Wait>("EB 8", 9).time = 0.625f;
             _attackCommands.GetAction<SendEventByName>("EB 9", 8).delay = 0.6f;
             _attackCommands.GetAction<Wait>("EB 9", 9).time = 0.625f;
+            _attackCommands.GetAction<SendEventByName>("Aim", 10).delay = 0.6f;
+            _attackCommands.GetAction<Wait>("Aim", 11).time = 0.625f;
             _attackCommands.GetAction<Wait>("Eb Extra Wait", 0).time = 0.05f;
 
             /*// Decrease idles

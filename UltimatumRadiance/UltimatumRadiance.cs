@@ -13,8 +13,6 @@ namespace UltimatumRadiance
         // ReSharper disable once NotAccessedField.Global
         public static UltimatumRadiance Instance;
 
-        //private const string LOST_KIN_VAR = "infectedKnightDreamDefeated";
-
         public override string GetVersion()
         {
             return FileVersionInfo.GetVersionInfo(Assembly.GetAssembly(typeof(UltimatumRadiance)).Location).FileVersion;
@@ -27,35 +25,8 @@ namespace UltimatumRadiance
             Log("Initalizing.");
             ModHooks.Instance.AfterSavegameLoadHook += AfterSaveGameLoad;
             ModHooks.Instance.NewGameHook += AddComponent;
-            //ModHooks.Instance.GetPlayerBoolHook += GetBoolHandler;
             ModHooks.Instance.LanguageGetHook += LangGet;
-            //ModHooks.Instance.SetPlayerBoolHook += SetBoolHandler; 
         }
-        
-        /*private void SetBoolHandler(string set, bool val)
-        {
-            if (set == LOST_KIN_VAR && val)
-            {
-                // Cause this runs before setting both bools
-                if (!Settings.DefeatedLord)
-                {
-                    PlayerData.instance.dreamOrbs += PlayerData.instance.infectedKnightDreamDefeated ? 800 : 400;
-                    EventRegister.SendEvent("DREAM ORB COLLECT");
-                }
-
-                if (PlayerData.instance.infectedKnightDreamDefeated)
-                {
-                    Settings.DefeatedLord = true;
-                }
-            }
-
-            PlayerData.instance.SetBoolInternal(set, val);
-        } 
-
-        private static bool GetBoolHandler(string get)
-        {
-            return get != LOST_KIN_VAR && PlayerData.instance.GetBoolInternal(get);
-        } */
 
         private static string LangGet(string key, string sheettitle)
         {
@@ -75,9 +46,7 @@ namespace UltimatumRadiance
         {
             ModHooks.Instance.AfterSavegameLoadHook -= AfterSaveGameLoad;
             ModHooks.Instance.NewGameHook -= AddComponent;
-            //ModHooks.Instance.GetPlayerBoolHook -= GetBoolHandler;
             ModHooks.Instance.LanguageGetHook -= LangGet;
-            //ModHooks.Instance.SetPlayerBoolHook -= SetBoolHandler; 
 
             // ReSharper disable once Unity.NoNullPropogation
             AbsFinder x = GameManager.instance?.gameObject.GetComponent<AbsFinder>();
