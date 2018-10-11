@@ -12,12 +12,6 @@ namespace UltimatumRadiance
 {
     internal class Abs : MonoBehaviour
     {
-        private HealthManager _hm;
-
-        private tk2dSpriteAnimator _anim;
-
-        private Recoil _recoil;
-
         private PlayMakerFSM _attackChoices;
         private PlayMakerFSM _attackCommands;
         private PlayMakerFSM _control;
@@ -27,16 +21,9 @@ namespace UltimatumRadiance
         private void Awake()
         {
             Log("Added AbsRad MonoBehaviour");
-            
-            ModHooks.Instance.ObjectPoolSpawnHook += Projectile;
-            
-            _hm = gameObject.GetComponent<HealthManager>();
             _attackChoices = gameObject.LocateMyFSM("Attack Choices");
             _attackCommands = gameObject.LocateMyFSM("Attack Commands");
-            //_balloons = gameObject.LocateMyFSM("Spawn Balloon");
-            _anim = gameObject.GetComponent<tk2dSpriteAnimator>();
             _control = gameObject.LocateMyFSM("Control");
-            _recoil = gameObject.GetComponent<Recoil>();
         }
 
         private void Start()
@@ -52,8 +39,8 @@ namespace UltimatumRadiance
 
             //RADIAL NAIL BARRAGE
             //Note that there's stuff in Update() below for this attack too
-            _attackCommands.GetAction<Wait>("CW Repeat", 0).time = 0.005f; //The little "spin" animation is faster
-            _attackCommands.GetAction<Wait>("CCW Repeat", 0).time = 0.005f;
+            _attackCommands.GetAction<Wait>("CW Repeat", 0).time = 0f; //The little "spin" animation is faster
+            _attackCommands.GetAction<Wait>("CCW Repeat", 0).time = 0f;
             _attackCommands.GetAction<FloatAdd>("CW Restart", 2).add = -10; //Change angle by thirds instead of halves
             _attackCommands.GetAction<FloatAdd>("CCW Restart", 2).add = 10;
             _attackCommands.RemoveAction("CW Restart", 1); //Go straight into the next wave of nails, no delay
@@ -64,6 +51,27 @@ namespace UltimatumRadiance
             //The attached MonoBehaviour for reversing its direction is in BeamSweeperClone.
             _attackChoices.GetAction<Wait>("Beam Sweep L", 0).time = 4f; //Wait longer because this attack is a lot more demanding now
             _attackChoices.GetAction<Wait>("Beam Sweep R", 0).time = 4f;
+
+            //RADIAL BEAM BARRAGE
+            _attackCommands.GetAction<SendEventByName>("EB 1", 9).delay = 0.525f; //Reduce the time the beam is active for
+            _attackCommands.GetAction<Wait>("EB 1", 10).time = 0.55f; //And drastically reduce the wait afterward
+            _attackCommands.GetAction<SendEventByName>("EB 2", 9).delay = 0.5f;
+            _attackCommands.GetAction<Wait>("EB 2", 10).time = 0.525f;
+            _attackCommands.GetAction<SendEventByName>("EB 3", 9).delay = 0.5f;
+            _attackCommands.GetAction<Wait>("EB 3", 10).time = 0.525f;
+            _attackCommands.GetAction<SendEventByName>("EB 4", 5).delay = 0.6f;
+            _attackCommands.GetAction<Wait>("EB 4", 6).time = 0.6f;
+            _attackCommands.GetAction<SendEventByName>("EB 5", 5).delay = 0.6f;
+            _attackCommands.GetAction<Wait>("EB 5", 6).time = 0.6f;
+            _attackCommands.GetAction<SendEventByName>("EB 6", 5).delay = 0.6f;
+            _attackCommands.GetAction<Wait>("EB 6", 6).time = 0.6f;
+            _attackCommands.GetAction<SendEventByName>("EB 7", 8).delay = 0.6f;
+            _attackCommands.GetAction<Wait>("EB 7", 9).time = 0.625f;
+            _attackCommands.GetAction<SendEventByName>("EB 8", 8).delay = 0.6f;
+            _attackCommands.GetAction<Wait>("EB 8", 9).time = 0.625f;
+            _attackCommands.GetAction<SendEventByName>("EB 9", 8).delay = 0.6f;
+            _attackCommands.GetAction<Wait>("EB 9", 9).time = 0.625f;
+            _attackCommands.GetAction<Wait>("Eb Extra Wait", 0).time = 0.05f;
 
             /*// Decrease idles
             _control.GetAction<WaitRandom>("Idle", 5).timeMax = 0.01f;
@@ -180,7 +188,7 @@ namespace UltimatumRadiance
             else if (CWRepeats == 2) CWRepeats = 0;
         }
 
-        [UsedImplicitly]
+        /*[UsedImplicitly]
         public void StopCheese()
         {
             float hx = HeroController.instance.gameObject.transform.GetPositionX();
@@ -207,7 +215,7 @@ namespace UltimatumRadiance
         private void OnDestroy()
         {
             ModHooks.Instance.ObjectPoolSpawnHook -= Projectile;
-        }
+        }*/
 
         private static void Log(object obj)
         {

@@ -8,7 +8,10 @@ namespace UltimatumRadiance
         private GameObject _abs;
         private GameObject _beamsweeper;
         private GameObject _beamsweeper2;
+
         private bool _cloned;
+        private bool _assigned;
+        private bool _returned;
 
         private void Start()
         {
@@ -17,19 +20,33 @@ namespace UltimatumRadiance
 
         private void Update()
         {
-            if (_abs != null) return;
-            _abs = GameObject.Find("Absolute Radiance");
-            _beamsweeper = GameObject.Find("Beam Sweeper");
-            if (!_cloned)
-            {
-                _beamsweeper2 = Instantiate(_beamsweeper);
-                _cloned = true;
-                Logger.Log("[Ultimatum Radiance] Instantiating beamsweeper clone");
+            if (_abs == null) {
+                _cloned = false;
+                _assigned = false;
+                _returned = false;
+                _abs = GameObject.Find("Absolute Radiance");
             }
-            if (_abs == null) return;
-            Logger.Log("[Ultimatum Radiance] Found the Radiance!");
-            _abs.AddComponent<Abs>();
-            _beamsweeper2.AddComponent<BeamSweeperClone>();
+            else if (!_assigned)
+            {
+                _beamsweeper = GameObject.Find("Beam Sweeper");
+                if (!_returned)
+                {
+                    _returned = true;
+                    return;
+                }
+
+                if (!_cloned)
+                {
+                    _beamsweeper2 = Instantiate(_beamsweeper);
+                    _cloned = true;
+                    Logger.Log("[Ultimatum Radiance] Instantiating beamsweeper clone");
+                }
+
+                _assigned = true;
+                Logger.Log("[Ultimatum Radiance] Found the Radiance!");
+                _abs.AddComponent<Abs>();
+                _beamsweeper2.AddComponent<BeamSweeperClone>();
+            }
         }
     }
 }
