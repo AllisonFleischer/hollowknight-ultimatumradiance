@@ -13,22 +13,41 @@ namespace UltimatumRadiance
 {
     internal class Abs : MonoBehaviour
     {
+        private GameObject _spikes;
+
+        private HealthManager _hm;
+
         private PlayMakerFSM _attackChoices;
         private PlayMakerFSM _attackCommands;
         private PlayMakerFSM _control;
+        private PlayMakerFSM _phaseControl;
+        private PlayMakerFSM _spikeControl;
 
         private int CWRepeats = 0;
+        private readonly int fullSpikesHealth = 350;
+        private bool fullSpikesSet = false;
 
         private void Awake()
         {
             Log("Added AbsRad MonoBehaviour");
+
+            _hm = gameObject.GetComponent<HealthManager>();
+
             _attackChoices = gameObject.LocateMyFSM("Attack Choices");
             _attackCommands = gameObject.LocateMyFSM("Attack Commands");
             _control = gameObject.LocateMyFSM("Control");
+            _phaseControl = gameObject.LocateMyFSM("Phase Control");
+
+            _spikes = GameObject.Find("Spike Control");
+            _spikeControl = _spikes.LocateMyFSM("Control");
         }
 
         private void Start()
         {
+            //HEALTH
+            _hm.hp += fullSpikesHealth; //We're adding a new phase, so create more health to accomodate it
+            _phaseControl.FsmVariables.GetFsmInt("P2 Spike Waves").Value += fullSpikesHealth; //P2 spikes is before the new phase, so increase health threshhold for that too
+
             //ORB BARRAGE
             _attackCommands.GetAction<Wait>("Orb Antic", 0).time = .75f; //INCREASE wait time at start of orb barrage, to increase chance player isn't in a nail wall or something
             _attackCommands.GetAction<SetIntValue>("Orb Antic", 1).intValue = 7; //Spawn more orbs
@@ -111,6 +130,55 @@ namespace UltimatumRadiance
                 }
             }
             else if (CWRepeats == 2) CWRepeats = 0;
+
+            if (_hm.hp < _phaseControl.FsmVariables.GetFsmInt("P2 Spike Waves").Value - fullSpikesHealth && !fullSpikesSet)
+            {
+                //NEW PHASE
+                fullSpikesSet = true;
+
+                //Spikes cover the whole arena!
+                _spikeControl.GetAction<SendEventByName>("Spikes Left", 0).sendEvent = "UP";
+                _spikeControl.GetAction<SendEventByName>("Spikes Left", 1).sendEvent = "UP";
+                _spikeControl.GetAction<SendEventByName>("Spikes Left", 2).sendEvent = "UP";
+                _spikeControl.GetAction<SendEventByName>("Spikes Left", 3).sendEvent = "UP";
+                _spikeControl.GetAction<SendEventByName>("Spikes Left", 4).sendEvent = "UP";
+
+                _spikeControl.GetAction<SendEventByName>("Spikes Right", 0).sendEvent = "UP";
+                _spikeControl.GetAction<SendEventByName>("Spikes Right", 1).sendEvent = "UP";
+                _spikeControl.GetAction<SendEventByName>("Spikes Right", 2).sendEvent = "UP";
+                _spikeControl.GetAction<SendEventByName>("Spikes Right", 3).sendEvent = "UP";
+                _spikeControl.GetAction<SendEventByName>("Spikes Right", 4).sendEvent = "UP";
+
+                _spikeControl.GetAction<SendEventByName>("Wave L", 2).sendEvent = "UP";
+                _spikeControl.GetAction<SendEventByName>("Wave L", 3).sendEvent = "UP";
+                _spikeControl.GetAction<SendEventByName>("Wave L", 4).sendEvent = "UP";
+                _spikeControl.GetAction<SendEventByName>("Wave L", 5).sendEvent = "UP";
+                _spikeControl.GetAction<SendEventByName>("Wave L", 6).sendEvent = "UP";
+                _spikeControl.GetAction<WaitRandom>("Wave L", 7).timeMin = 0.1f;
+                _spikeControl.GetAction<WaitRandom>("Wave L", 7).timeMax = 0.1f;
+
+                _spikeControl.GetAction<SendEventByName>("Wave R", 2).sendEvent = "UP";
+                _spikeControl.GetAction<SendEventByName>("Wave R", 3).sendEvent = "UP";
+                _spikeControl.GetAction<SendEventByName>("Wave R", 4).sendEvent = "UP";
+                _spikeControl.GetAction<SendEventByName>("Wave R", 5).sendEvent = "UP";
+                _spikeControl.GetAction<SendEventByName>("Wave R", 6).sendEvent = "UP";
+                _spikeControl.GetAction<WaitRandom>("Wave R", 7).timeMin = 0.1f;
+                _spikeControl.GetAction<WaitRandom>("Wave R", 7).timeMax = 0.1f;
+
+                _attackCommands.GetAction<Wait>("Orb Summon", 2).time = 1.5f; //More generous orbs
+                _attackCommands.GetAction<SetIntValue>("Orb Antic", 1).intValue = 2;
+                _attackCommands.GetAction<RandomInt>("Orb Antic", 2).min = 1;
+                _attackCommands.GetAction<RandomInt>("Orb Antic", 2).max = 3;
+
+                _attackCommands.GetAction<Wait>("EB 1", 10).time = 0.925f;
+                _attackCommands.GetAction<Wait>("EB 2", 10).time = 0.9f;
+                _attackCommands.GetAction<Wait>("EB 3", 10).time = 0.9f;
+
+                _attackChoices.ChangeTransition("A1 Choice", "NAIL L SWEEP", "Beam Sweep L"); //Nail sweeps are disabled, too bullshit with spikes everywhere
+                _attackChoices.ChangeTransition("A1 Choice", "NAIL R SWEEP", "Beam Sweep L");
+                _attackChoices.ChangeTransition("A1 Choice", "NAIL FAN", "Eye Beam Wait");
+                _attackChoices.ChangeTransition("A1 Choice", "NAIL TOP SWEEP", "Orb Wait");
+            }
         }
 
         private static void Log(object obj)

@@ -18,7 +18,6 @@ namespace UltimatumRadiance
 
         private bool _cloned;
         private bool _assigned;
-        private bool _returned;
         private bool _arena2set;
 
         private void Start()
@@ -31,7 +30,6 @@ namespace UltimatumRadiance
             if (_abs == null) {
                 _cloned = false;
                 _assigned = false;
-                _returned = false;
                 _arena2set = false;
                 _abs = GameObject.Find("Absolute Radiance");
             }
@@ -39,11 +37,6 @@ namespace UltimatumRadiance
             else if (!_assigned)
             {
                 _beamsweeper = GameObject.Find("Beam Sweeper");
-                if (!_returned)
-                {
-                    _returned = true;
-                    return;
-                }
 
                 if (!_cloned)
                 {
