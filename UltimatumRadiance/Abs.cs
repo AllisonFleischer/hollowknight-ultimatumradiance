@@ -14,6 +14,8 @@ namespace UltimatumRadiance
     internal class Abs : MonoBehaviour
     {
         private GameObject _spikes;
+        private GameObject _beamsweeper;
+        private GameObject _beamsweeper2;
 
         private HealthManager _hm;
 
@@ -22,10 +24,13 @@ namespace UltimatumRadiance
         private PlayMakerFSM _control;
         private PlayMakerFSM _phaseControl;
         private PlayMakerFSM _spikeControl;
+        private PlayMakerFSM _beamsweepercontrol;
+        private PlayMakerFSM _beamsweeper2control;
 
         private int CWRepeats = 0;
         private readonly int fullSpikesHealth = 350;
         private bool fullSpikesSet = false;
+        private bool arena2Set = false;
 
         private void Awake()
         {
@@ -40,6 +45,12 @@ namespace UltimatumRadiance
 
             _spikes = GameObject.Find("Spike Control");
             _spikeControl = _spikes.LocateMyFSM("Control");
+
+            _beamsweeper = GameObject.Find("Beam Sweeper");
+            _beamsweeper2 = Instantiate(_beamsweeper);
+            _beamsweeper2.AddComponent<BeamSweeperClone>();
+            _beamsweepercontrol = _beamsweeper.LocateMyFSM("Control");
+            _beamsweeper2control = _beamsweeper2.LocateMyFSM("Control");
         }
 
         private void Start()
@@ -131,9 +142,22 @@ namespace UltimatumRadiance
             }
             else if (CWRepeats == 2) CWRepeats = 0;
 
-            if (_hm.hp < _phaseControl.FsmVariables.GetFsmInt("P2 Spike Waves").Value - fullSpikesHealth && !fullSpikesSet)
+            //Force beam sweepers to always go in opposing directions. There were some special cases where they wouldn't that I was too lazy to investigate
+            if (_beamsweepercontrol.ActiveStateName == _beamsweeper2control.ActiveStateName)
             {
-                //NEW PHASE
+                switch (_beamsweepercontrol.ActiveStateName)
+                {
+                    case "Beam Sweep L":
+                        _beamsweeper2control.ChangeState(GetFsmEventByName(_beamsweeper2control, "BEAM SWEEP R"));
+                        break;
+                    case "Beam Sweep R":
+                        _beamsweeper2control.ChangeState(GetFsmEventByName(_beamsweeper2control, "BEAM SWEEP L"));
+                        break;
+                }
+            }
+
+            if (_hm.hp < _phaseControl.FsmVariables.GetFsmInt("P2 Spike Waves").Value - fullSpikesHealth && !fullSpikesSet) //NEW PHASE
+            {
                 fullSpikesSet = true;
 
                 //Spikes cover the whole arena!
@@ -170,7 +194,7 @@ namespace UltimatumRadiance
                 _attackCommands.GetAction<RandomInt>("Orb Antic", 2).min = 1;
                 _attackCommands.GetAction<RandomInt>("Orb Antic", 2).max = 3;
 
-                _attackCommands.GetAction<Wait>("EB 1", 10).time = 0.925f;
+                _attackCommands.GetAction<Wait>("EB 1", 10).time = 0.925f; //Slower radial bursts
                 _attackCommands.GetAction<Wait>("EB 2", 10).time = 0.9f;
                 _attackCommands.GetAction<Wait>("EB 3", 10).time = 0.9f;
 
@@ -179,6 +203,42 @@ namespace UltimatumRadiance
                 _attackChoices.ChangeTransition("A1 Choice", "NAIL FAN", "Eye Beam Wait");
                 _attackChoices.ChangeTransition("A1 Choice", "NAIL TOP SWEEP", "Orb Wait");
             }
+
+            if ((_attackChoices.FsmVariables.GetFsmInt("Arena").Value == 2) && !arena2Set) //Platform phase!
+            {
+                Logger.Log("[Ultimatum Radiance] Starting Phase 2");
+                arena2Set = true;
+
+                _attackCommands.GetAction<SetIntValue>("Orb Antic", 1).intValue = 7; //Reset orbs
+                _attackCommands.GetAction<RandomInt>("Orb Antic", 2).min = 6;
+                _attackCommands.GetAction<RandomInt>("Orb Antic", 2).max = 8;
+                _attackCommands.GetAction<Wait>("Orb Summon", 2).time = 0.40f;
+
+                //Beam sweepers cover a larger area
+                /*Normally the FSM handles this, but I'm modifying the numbers through code instead
+                 *because the L2/R2 states don't have the events I need to get opposing beams working */
+                _beamsweepercontrol.GetAction<SetPosition>("Beam Sweep L", 3).x = 89;
+                _beamsweepercontrol.GetAction<iTweenMoveBy>("Beam Sweep L", 5).vector = new Vector3(-50, 0, 0);
+                _beamsweepercontrol.GetAction<iTweenMoveBy>("Beam Sweep L", 5).time = 5;
+                _beamsweepercontrol.GetAction<SetPosition>("Beam Sweep R", 4).x = 32.6f;
+                _beamsweepercontrol.GetAction<iTweenMoveBy>("Beam Sweep R", 6).vector = new Vector3(50, 0, 0);
+                _beamsweepercontrol.GetAction<iTweenMoveBy>("Beam Sweep R", 6).time = 5;
+                _beamsweeper2control.GetAction<SetPosition>("Beam Sweep L", 2).x = 89;
+                _beamsweeper2control.GetAction<iTweenMoveBy>("Beam Sweep L", 4).vector = new Vector3(-50, 0, 0);
+                _beamsweeper2control.GetAction<iTweenMoveBy>("Beam Sweep L", 4).time = 5;
+                _beamsweeper2control.GetAction<SetPosition>("Beam Sweep R", 3).x = 32.6f;
+                _beamsweeper2control.GetAction<iTweenMoveBy>("Beam Sweep R", 5).vector = new Vector3(50, 0, 0);
+                _beamsweeper2control.GetAction<iTweenMoveBy>("Beam Sweep R", 5).time = 5;
+            }
+        }
+
+        private static FsmEvent GetFsmEventByName(PlayMakerFSM fsm, string eventName)
+        {
+            foreach (FsmEvent t in fsm.FsmEvents)
+            {
+                if (t.Name == eventName) return t;
+            }
+            return null;
         }
 
         private static void Log(object obj)
