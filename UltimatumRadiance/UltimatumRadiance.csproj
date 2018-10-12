@@ -36,6 +36,9 @@
     <Reference Include="Assembly-CSharp">
       <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Hollow Knight\hollow_knight_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
+    <Reference Include="ModCommon">
+      <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Hollow Knight\hollow_knight_Data\Managed\Mods\ModCommon.dll</HintPath>
+    </Reference>
     <Reference Include="PlayMaker">
       <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Hollow Knight\hollow_knight_Data\Managed\PlayMaker.dll</HintPath>
     </Reference>
@@ -57,7 +60,6 @@
   <ItemGroup>
     <Compile Include="BeamSweeperClone.cs" />
     <Compile Include="Extensions.cs" />
-    <Compile Include="FsmUtil.cs" />
     <Compile Include="Abs.cs" />
     <Compile Include="AbsFinder.cs" />
     <Compile Include="UltimatumRadiance.cs" />
