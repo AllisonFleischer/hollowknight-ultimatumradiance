@@ -28,7 +28,7 @@ namespace UltimatumRadiance
         private PlayMakerFSM _beamsweeper2control;
 
         private int CWRepeats = 0;
-        private readonly int fullSpikesHealth = 350;
+        private readonly int fullSpikesHealth = 250;
         private bool fullSpikesSet = false;
         private bool arena2Set = false;
 
@@ -189,16 +189,33 @@ namespace UltimatumRadiance
                 _spikeControl.GetAction<WaitRandom>("Wave R", 7).timeMin = 0.1f;
                 _spikeControl.GetAction<WaitRandom>("Wave R", 7).timeMax = 0.1f;
 
-                _attackCommands.GetAction<Wait>("Orb Summon", 2).time = 1.5f; //More generous orbs
+                //More generous orbs
+                _attackCommands.GetAction<Wait>("Orb Summon", 2).time = 1.5f;
                 _attackCommands.GetAction<SetIntValue>("Orb Antic", 1).intValue = 2;
                 _attackCommands.GetAction<RandomInt>("Orb Antic", 2).min = 1;
                 _attackCommands.GetAction<RandomInt>("Orb Antic", 2).max = 3;
 
-                _attackCommands.GetAction<Wait>("EB 1", 10).time = 0.925f; //Slower radial bursts
-                _attackCommands.GetAction<Wait>("EB 2", 10).time = 0.9f;
-                _attackCommands.GetAction<Wait>("EB 3", 10).time = 0.9f;
+                //Slower radial bursts
+                _attackCommands.GetAction<AudioPlayerOneShotSingle>("EB 1", 2).delay = .75f;
+                _attackCommands.GetAction<SendEventByName>("EB 1", 3).delay = .75f;
+                _attackCommands.GetAction<SendEventByName>("EB 1", 8).delay = .75f;
+                _attackCommands.GetAction<SendEventByName>("EB 1", 9).delay = .85f;
+                _attackCommands.GetAction<Wait>("EB 1", 10).time = 1.92f;
 
-                _attackChoices.ChangeTransition("A1 Choice", "NAIL L SWEEP", "Beam Sweep L"); //Nail sweeps are disabled, too bullshit with spikes everywhere
+                _attackCommands.GetAction<AudioPlayerOneShotSingle>("EB 2", 3).delay = .75f;
+                _attackCommands.GetAction<SendEventByName>("EB 2", 4).delay = .75f;
+                _attackCommands.GetAction<SendEventByName>("EB 2", 8).delay = .75f;
+                _attackCommands.GetAction<SendEventByName>("EB 2", 9).delay = .85f;
+                _attackCommands.GetAction<Wait>("EB 2", 10).time = 1.2f;
+
+                _attackCommands.GetAction<AudioPlayerOneShotSingle>("EB 3", 3).delay = .75f;
+                _attackCommands.GetAction<SendEventByName>("EB 3", 4).delay = .75f;
+                _attackCommands.GetAction<SendEventByName>("EB 3", 8).delay = .75f;
+                _attackCommands.GetAction<SendEventByName>("EB 3", 9).delay = .85f;
+                _attackCommands.GetAction<Wait>("EB 3", 10).time = 1.2f;
+
+                //Nail sweeps are disabled, too bullshit with spikes everywhere
+                _attackChoices.ChangeTransition("A1 Choice", "NAIL L SWEEP", "Beam Sweep L");
                 _attackChoices.ChangeTransition("A1 Choice", "NAIL R SWEEP", "Beam Sweep L");
                 _attackChoices.ChangeTransition("A1 Choice", "NAIL FAN", "Eye Beam Wait");
                 _attackChoices.ChangeTransition("A1 Choice", "NAIL TOP SWEEP", "Orb Wait");
