@@ -195,6 +195,8 @@ namespace UltimatumRadiance
                 _spikeMasterControl.GetAction<WaitRandom>("Wave R", 7).timeMin = 0.1f;
                 _spikeMasterControl.GetAction<WaitRandom>("Wave R", 7).timeMax = 0.1f;
 
+                _spikeMasterControl.SetState("Spike Waves");
+
                 //Prevent ddark cheese; if you try to dive onto spikes you take damage
                 _spellControl.InsertAction("Q2 Land", new CallMethod
                 {
