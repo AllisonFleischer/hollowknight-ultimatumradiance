@@ -13,9 +13,10 @@ namespace UltimatumRadiance
 {
     internal class Abs : MonoBehaviour
     {
-        private GameObject _spikes;
+        private GameObject _spikeMaster;
         private GameObject _beamsweeper;
         private GameObject _beamsweeper2;
+        private GameObject _knight;
 
         private HealthManager _hm;
 
@@ -23,9 +24,10 @@ namespace UltimatumRadiance
         private PlayMakerFSM _attackCommands;
         private PlayMakerFSM _control;
         private PlayMakerFSM _phaseControl;
-        private PlayMakerFSM _spikeControl;
+        private PlayMakerFSM _spikeMasterControl;
         private PlayMakerFSM _beamsweepercontrol;
         private PlayMakerFSM _beamsweeper2control;
+        private PlayMakerFSM _spellControl;
 
         private int CWRepeats = 0;
         private readonly int fullSpikesHealth = 250;
@@ -43,18 +45,23 @@ namespace UltimatumRadiance
             _control = gameObject.LocateMyFSM("Control");
             _phaseControl = gameObject.LocateMyFSM("Phase Control");
 
-            _spikes = GameObject.Find("Spike Control");
-            _spikeControl = _spikes.LocateMyFSM("Control");
+            _spikeMaster = GameObject.Find("Spike Control");
+            _spikeMasterControl = _spikeMaster.LocateMyFSM("Control");
 
             _beamsweeper = GameObject.Find("Beam Sweeper");
             _beamsweeper2 = Instantiate(_beamsweeper);
             _beamsweeper2.AddComponent<BeamSweeperClone>();
             _beamsweepercontrol = _beamsweeper.LocateMyFSM("Control");
             _beamsweeper2control = _beamsweeper2.LocateMyFSM("Control");
+
+            _knight = GameObject.Find("Knight");
+            _spellControl = _knight.LocateMyFSM("Spell Control");
         }
 
         private void Start()
         {
+            Log("Changing fight variables...");
+
             //HEALTH
             _hm.hp += fullSpikesHealth; //We're adding a new phase, so create more health to accomodate it
             _phaseControl.FsmVariables.GetFsmInt("P2 Spike Waves").Value += fullSpikesHealth; //P2 spikes is before the new phase, so increase health threshhold for that too
@@ -88,7 +95,6 @@ namespace UltimatumRadiance
             _attackChoices.GetAction<Wait>("Beam Sweep R 2", 0).time = 5.05f;
             _attackChoices.GetAction<SendEventByName>("Beam Sweep L 2", 1).sendEvent = "BEAM SWEEP L";
             _attackChoices.GetAction<SendEventByName>("Beam Sweep R 2", 1).sendEvent = "BEAM SWEEP R";
-
 
             //RADIAL BEAM BARRAGE
             _attackCommands.GetAction<SendEventByName>("EB 1", 9).delay = 0.525f; //Reduce the time the beam is active for
@@ -161,33 +167,42 @@ namespace UltimatumRadiance
                 fullSpikesSet = true;
 
                 //Spikes cover the whole arena!
-                _spikeControl.GetAction<SendEventByName>("Spikes Left", 0).sendEvent = "UP";
-                _spikeControl.GetAction<SendEventByName>("Spikes Left", 1).sendEvent = "UP";
-                _spikeControl.GetAction<SendEventByName>("Spikes Left", 2).sendEvent = "UP";
-                _spikeControl.GetAction<SendEventByName>("Spikes Left", 3).sendEvent = "UP";
-                _spikeControl.GetAction<SendEventByName>("Spikes Left", 4).sendEvent = "UP";
+                _spikeMasterControl.GetAction<SendEventByName>("Spikes Left", 0).sendEvent = "UP";
+                _spikeMasterControl.GetAction<SendEventByName>("Spikes Left", 1).sendEvent = "UP";
+                _spikeMasterControl.GetAction<SendEventByName>("Spikes Left", 2).sendEvent = "UP";
+                _spikeMasterControl.GetAction<SendEventByName>("Spikes Left", 3).sendEvent = "UP";
+                _spikeMasterControl.GetAction<SendEventByName>("Spikes Left", 4).sendEvent = "UP";
 
-                _spikeControl.GetAction<SendEventByName>("Spikes Right", 0).sendEvent = "UP";
-                _spikeControl.GetAction<SendEventByName>("Spikes Right", 1).sendEvent = "UP";
-                _spikeControl.GetAction<SendEventByName>("Spikes Right", 2).sendEvent = "UP";
-                _spikeControl.GetAction<SendEventByName>("Spikes Right", 3).sendEvent = "UP";
-                _spikeControl.GetAction<SendEventByName>("Spikes Right", 4).sendEvent = "UP";
+                _spikeMasterControl.GetAction<SendEventByName>("Spikes Right", 0).sendEvent = "UP";
+                _spikeMasterControl.GetAction<SendEventByName>("Spikes Right", 1).sendEvent = "UP";
+                _spikeMasterControl.GetAction<SendEventByName>("Spikes Right", 2).sendEvent = "UP";
+                _spikeMasterControl.GetAction<SendEventByName>("Spikes Right", 3).sendEvent = "UP";
+                _spikeMasterControl.GetAction<SendEventByName>("Spikes Right", 4).sendEvent = "UP";
 
-                _spikeControl.GetAction<SendEventByName>("Wave L", 2).sendEvent = "UP";
-                _spikeControl.GetAction<SendEventByName>("Wave L", 3).sendEvent = "UP";
-                _spikeControl.GetAction<SendEventByName>("Wave L", 4).sendEvent = "UP";
-                _spikeControl.GetAction<SendEventByName>("Wave L", 5).sendEvent = "UP";
-                _spikeControl.GetAction<SendEventByName>("Wave L", 6).sendEvent = "UP";
-                _spikeControl.GetAction<WaitRandom>("Wave L", 7).timeMin = 0.1f;
-                _spikeControl.GetAction<WaitRandom>("Wave L", 7).timeMax = 0.1f;
+                _spikeMasterControl.GetAction<SendEventByName>("Wave L", 2).sendEvent = "UP";
+                _spikeMasterControl.GetAction<SendEventByName>("Wave L", 3).sendEvent = "UP";
+                _spikeMasterControl.GetAction<SendEventByName>("Wave L", 4).sendEvent = "UP";
+                _spikeMasterControl.GetAction<SendEventByName>("Wave L", 5).sendEvent = "UP";
+                _spikeMasterControl.GetAction<SendEventByName>("Wave L", 6).sendEvent = "UP";
+                _spikeMasterControl.GetAction<WaitRandom>("Wave L", 7).timeMin = 0.1f;
+                _spikeMasterControl.GetAction<WaitRandom>("Wave L", 7).timeMax = 0.1f;
 
-                _spikeControl.GetAction<SendEventByName>("Wave R", 2).sendEvent = "UP";
-                _spikeControl.GetAction<SendEventByName>("Wave R", 3).sendEvent = "UP";
-                _spikeControl.GetAction<SendEventByName>("Wave R", 4).sendEvent = "UP";
-                _spikeControl.GetAction<SendEventByName>("Wave R", 5).sendEvent = "UP";
-                _spikeControl.GetAction<SendEventByName>("Wave R", 6).sendEvent = "UP";
-                _spikeControl.GetAction<WaitRandom>("Wave R", 7).timeMin = 0.1f;
-                _spikeControl.GetAction<WaitRandom>("Wave R", 7).timeMax = 0.1f;
+                _spikeMasterControl.GetAction<SendEventByName>("Wave R", 2).sendEvent = "UP";
+                _spikeMasterControl.GetAction<SendEventByName>("Wave R", 3).sendEvent = "UP";
+                _spikeMasterControl.GetAction<SendEventByName>("Wave R", 4).sendEvent = "UP";
+                _spikeMasterControl.GetAction<SendEventByName>("Wave R", 5).sendEvent = "UP";
+                _spikeMasterControl.GetAction<SendEventByName>("Wave R", 6).sendEvent = "UP";
+                _spikeMasterControl.GetAction<WaitRandom>("Wave R", 7).timeMin = 0.1f;
+                _spikeMasterControl.GetAction<WaitRandom>("Wave R", 7).timeMax = 0.1f;
+
+                //Prevent ddark cheese; if you try to dive onto spikes you take damage
+                _spellControl.InsertAction("Q2 Land", new CallMethod
+                {
+                    behaviour = this,
+                    methodName = "DivePunishment",
+                    parameters = new FsmVar[0],
+                    everyFrame = false
+                }, 0);
 
                 //More generous orbs
                 _attackCommands.GetAction<Wait>("Orb Summon", 2).time = 1.5f;
@@ -226,6 +241,8 @@ namespace UltimatumRadiance
                 Logger.Log("[Ultimatum Radiance] Starting Phase 2");
                 arena2Set = true;
 
+                _spellControl.RemoveAction("Q2 Land", 0); //Revert ddark to normal behavior
+
                 _attackCommands.GetAction<SetIntValue>("Orb Antic", 1).intValue = 7; //Reset orbs
                 _attackCommands.GetAction<RandomInt>("Orb Antic", 2).min = 6;
                 _attackCommands.GetAction<RandomInt>("Orb Antic", 2).max = 8;
@@ -247,6 +264,14 @@ namespace UltimatumRadiance
                 _beamsweeper2control.GetAction<iTweenMoveBy>("Beam Sweep R", 5).vector = new Vector3(50, 0, 0);
                 _beamsweeper2control.GetAction<iTweenMoveBy>("Beam Sweep R", 5).time = 5;
             }
+        }
+
+        [UsedImplicitly]
+        public void DivePunishment()
+        {
+            Log("YOU WON'T CHEESE SPIKES IN THIS TOWN AGAIN");
+            HeroController.instance.TakeDamage(gameObject, GlobalEnums.CollisionSide.bottom, 1, 0); //Knight takes a hit
+            EventRegister.SendEvent("HERO DAMAGED"); //Tells the UI to refresh
         }
 
         private static FsmEvent GetFsmEventByName(PlayMakerFSM fsm, string eventName)
