@@ -14,6 +14,14 @@ namespace UltimatumRadiance
     internal class Abs : MonoBehaviour
     {
         private GameObject _spikeMaster;
+        private GameObject _spikeTemplate;
+
+        private GameObject _spikeClone;
+        private GameObject _spikeClone2;
+        private GameObject _spikeClone3;
+        private GameObject _spikeClone4;
+        private GameObject _spikeClone5;
+
         private GameObject _beamsweeper;
         private GameObject _beamsweeper2;
         private GameObject _knight;
@@ -30,9 +38,24 @@ namespace UltimatumRadiance
         private PlayMakerFSM _spellControl;
 
         private int CWRepeats = 0;
-        private readonly int fullSpikesHealth = 250;
         private bool fullSpikesSet = false;
         private bool arena2Set = false;
+        private bool onePlatSet = false;
+        private bool platSpikesSet = false;
+
+        private const int fullSpikesHealth = 250;
+        private const int onePlatHealth = 100;
+        private const int platSpikesHealth = 150;
+
+        /*        radiant spike x: 48.490002
+                                y: 21.180000
+                                z: -0.001010
+
+        radiant plat small (10) x: 67.779999
+                                y: 151.820007
+                                z: 0.000000
+
+                      left plat x: 58.040001*/
 
         private void Awake()
         {
@@ -47,6 +70,7 @@ namespace UltimatumRadiance
 
             _spikeMaster = GameObject.Find("Spike Control");
             _spikeMasterControl = _spikeMaster.LocateMyFSM("Control");
+            _spikeTemplate = GameObject.Find("Radiant Spike");
 
             _beamsweeper = GameObject.Find("Beam Sweeper");
             _beamsweeper2 = Instantiate(_beamsweeper);
@@ -63,8 +87,39 @@ namespace UltimatumRadiance
             Log("Changing fight variables...");
 
             //HEALTH
-            _hm.hp += fullSpikesHealth; //We're adding a new phase, so create more health to accomodate it
-            _phaseControl.FsmVariables.GetFsmInt("P2 Spike Waves").Value += fullSpikesHealth; //P2 spikes is before the new phase, so increase health threshhold for that too
+            _hm.hp += fullSpikesHealth + onePlatHealth + platSpikesHealth; //We're adding new phases, so create more health to accomodate them
+            _phaseControl.FsmVariables.GetFsmInt("P2 Spike Waves").Value += fullSpikesHealth + onePlatHealth + platSpikesHealth; //Increase phase health threshholds
+            _phaseControl.FsmVariables.GetFsmInt("P3 A1 Rage").Value += onePlatHealth + platSpikesHealth;
+            _phaseControl.FsmVariables.GetFsmInt("P4 Stun1").Value += onePlatHealth + platSpikesHealth;
+            _phaseControl.FsmVariables.GetFsmInt("P5 Acend").Value += onePlatHealth + platSpikesHealth;
+            _control.GetAction<SetHP>("Scream", 7).hp = 1000 + onePlatHealth + platSpikesHealth; //Increase health for final phase
+
+            //PLATFORM SPIKES
+            _spikeClone = Instantiate(_spikeTemplate);
+            _spikeClone.transform.SetPositionX(58f);
+            _spikeClone.transform.SetPositionY(153.8f);
+
+            _spikeClone2 = Instantiate(_spikeTemplate);
+            _spikeClone2.transform.SetPositionX(57.5f);
+            _spikeClone2.transform.SetPositionY(153.8f);
+
+            _spikeClone3 = Instantiate(_spikeTemplate);
+            _spikeClone3.transform.SetPositionX(57f);
+            _spikeClone3.transform.SetPositionY(153.8f);
+
+            _spikeClone4 = Instantiate(_spikeTemplate);
+            _spikeClone4.transform.SetPositionX(58.5f);
+            _spikeClone4.transform.SetPositionY(153.8f);
+
+            _spikeClone5 = Instantiate(_spikeTemplate);
+            _spikeClone5.transform.SetPositionX(59f);
+            _spikeClone5.transform.SetPositionY(153.8f);
+
+            _spikeClone.LocateMyFSM("Control").SendEvent("DOWN");
+            _spikeClone2.LocateMyFSM("Control").SendEvent("DOWN");
+            _spikeClone3.LocateMyFSM("Control").SendEvent("DOWN");
+            _spikeClone4.LocateMyFSM("Control").SendEvent("DOWN");
+            _spikeClone5.LocateMyFSM("Control").SendEvent("DOWN");
 
             //ORB BARRAGE
             _attackCommands.GetAction<Wait>("Orb Antic", 0).time = .75f; //INCREASE wait time at start of orb barrage, to increase chance player isn't in a nail wall or something
@@ -248,7 +303,7 @@ namespace UltimatumRadiance
                 _attackCommands.GetAction<SetIntValue>("Orb Antic", 1).intValue = 7; //Reset orbs
                 _attackCommands.GetAction<RandomInt>("Orb Antic", 2).min = 6;
                 _attackCommands.GetAction<RandomInt>("Orb Antic", 2).max = 8;
-                _attackCommands.GetAction<Wait>("Orb Summon", 2).time = 0.40f;
+                _attackCommands.GetAction<Wait>("Orb Summon", 2).time = 0.50f;
 
                 //Beam sweepers cover a larger area
                 /*Normally the FSM handles this, but I'm modifying the numbers through code instead
@@ -265,6 +320,34 @@ namespace UltimatumRadiance
                 _beamsweeper2control.GetAction<SetPosition>("Beam Sweep R", 3).x = 32.6f;
                 _beamsweeper2control.GetAction<iTweenMoveBy>("Beam Sweep R", 5).vector = new Vector3(50, 0, 0);
                 _beamsweeper2control.GetAction<iTweenMoveBy>("Beam Sweep R", 5).time = 5;
+            }
+
+            if (_hm.hp < _phaseControl.FsmVariables.GetFsmInt("P5 Acend").Value - onePlatHealth && !onePlatSet)
+            {
+                Log("Removing upper right platform");
+                onePlatSet = true;
+                _attackCommands.GetAction<Wait>("Orb Summon", 2).time = 0.80f;
+                GameObject.Find("Radiant Plat Small (10)").LocateMyFSM("radiant_plat").ChangeState(GetFsmEventByName(GameObject.Find("Radiant Plat Small (10)").LocateMyFSM("radiant_plat"), "SLOW VANISH"));
+            }
+            if (_hm.hp < _phaseControl.FsmVariables.GetFsmInt("P5 Acend").Value - onePlatHealth - platSpikesHealth)
+            {
+                _spikeClone.LocateMyFSM("Control").SendEvent("UP");
+                _spikeClone2.LocateMyFSM("Control").SendEvent("UP");
+                _spikeClone3.LocateMyFSM("Control").SendEvent("UP");
+                _spikeClone4.LocateMyFSM("Control").SendEvent("UP");
+                _spikeClone5.LocateMyFSM("Control").SendEvent("UP");
+                if (!platSpikesSet)
+                {
+                    platSpikesSet = true;
+                    GameObject.Find("Radiant Plat Small (10)").LocateMyFSM("radiant_plat").ChangeState(GetFsmEventByName(GameObject.Find("Radiant Plat Small (10)").LocateMyFSM("radiant_plat"), "SLOW VANISH"));
+                    _spellControl.InsertAction("Q2 Land", new CallMethod
+                    {
+                        behaviour = this,
+                        methodName = "DivePunishment",
+                        parameters = new FsmVar[0],
+                        everyFrame = false
+                    }, 0);
+                }
             }
         }
 
