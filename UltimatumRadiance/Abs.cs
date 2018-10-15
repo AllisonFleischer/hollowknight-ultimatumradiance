@@ -175,10 +175,10 @@ namespace UltimatumRadiance
             _attackCommands.GetAction<Wait>("Eb Extra Wait", 0).time = 0.05f;
 
             //VERTICAL NAIL COMB
-            _attackChoices.GetAction<SendEventByName>("Nail Top Sweep", 1).delay = 0.25f;
-            _attackChoices.GetAction<SendEventByName>("Nail Top Sweep", 2).delay = 0.5f;
-            _attackChoices.GetAction<SendEventByName>("Nail Top Sweep", 3).delay = 0.75f;
-            _attackChoices.GetAction<Wait>("Nail Top Sweep", 4).time = 2f;
+            _attackChoices.GetAction<SendEventByName>("Nail Top Sweep", 1).delay = 0.35f;
+            _attackChoices.GetAction<SendEventByName>("Nail Top Sweep", 2).delay = 0.7f;
+            _attackChoices.GetAction<SendEventByName>("Nail Top Sweep", 3).delay = 1.05f;
+            _attackChoices.GetAction<Wait>("Nail Top Sweep", 4).time = 2.3f;
             _control.GetAction<Wait>("Rage Comb", 0).time = 0.6f;
 
             Log("fin.");
