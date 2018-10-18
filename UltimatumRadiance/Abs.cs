@@ -36,6 +36,7 @@ namespace UltimatumRadiance
 
         private int CWRepeats = 0;
         private bool fullSpikesSet = false;
+        private bool disableBeamSet = false;
         private bool arena2Set = false;
         private bool onePlatSet = false;
         private bool platSpikesSet = false;
@@ -283,6 +284,15 @@ namespace UltimatumRadiance
                 _attackChoices.ChangeTransition("A1 Choice", "NAIL R SWEEP", "Beam Sweep L");
                 _attackChoices.ChangeTransition("A1 Choice", "NAIL FAN", "Eye Beam Wait");
                 _attackChoices.ChangeTransition("A1 Choice", "NAIL TOP SWEEP", "Orb Wait");
+            }
+
+            if (_hm.hp < _phaseControl.FsmVariables.GetFsmInt("P3 A1 Rage").Value + 30 && !disableBeamSet)
+            {
+                disableBeamSet = true;
+
+                //Disable beam sweeps when nail rain/rage phase is about to start, so the player isn't forced to ddark
+                _attackChoices.ChangeTransition("A1 Choice", "BEAM SWEEP L", "Orb Wait");
+                _attackChoices.ChangeTransition("A1 Choice", "BEAM SWEEP R", "Eye Beam Wait");
             }
 
             if ((_attackChoices.FsmVariables.GetFsmInt("Arena").Value == 2) && !arena2Set) //Platform phase!
