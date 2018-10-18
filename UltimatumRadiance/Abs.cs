@@ -95,6 +95,7 @@ namespace UltimatumRadiance
             _control.GetAction<SetHP>("Scream", 7).hp = 1000 + onePlatHealth + platSpikesHealth; //Increase health for final phase
 
             //PLATFORM SPIKES
+            //Create spikes on top platform
             _spikeClone = Instantiate(_spikeTemplate);
             _spikeClone.transform.SetPositionX(58f);
             _spikeClone.transform.SetPositionY(153.8f);
@@ -128,7 +129,7 @@ namespace UltimatumRadiance
             _attackCommands.GetAction<RandomInt>("Orb Antic", 2).max = 8;
             _attackCommands.GetAction<Wait>("Orb Summon", 2).time = 0.40f; //Decrease telegraph time to spawn orb
             _attackCommands.GetAction<Wait>("Orb Pause", 0).time = 0.01f; //Remove time to start spawning new orb
-            _attackChoices.GetAction<Wait>("Orb Recover", 0).time = 0.75f; //Increase downtime at the end of the barrage, just like at the start
+            _attackChoices.GetAction<Wait>("Orb Recover", 0).time = 1.25f; //Increase downtime at the end of the barrage, just like at the start
 
             //RADIAL NAIL BARRAGE
             //Note that there's stuff in Update() below for this attack too
