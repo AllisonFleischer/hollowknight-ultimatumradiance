@@ -30,9 +30,16 @@ namespace UltimatumRadiance
 
         private static string LangGet(string key, string sheettitle)
         {
-            return key == "ABSOLUTE_RADIANCE_SUPER"
-                ? "Ultimatum"
-                : Language.Language.GetInternal(key, sheettitle);
+            switch (key)
+            {
+                case "ABSOLUTE_RADIANCE_SUPER": return "Ultimatum";
+                case "GG_S_RADIANCE": return "God of light, sworn to crush any rebellion";
+                case "GODSEEKER_RADIANCE_STATUE":
+                    return "Incredible! For a mere Speck to take up arms and defy the brilliant deity's ultimatum is to be consigned to oblivion, and yet thou survive!\n\n" +
+                        "But couldst thou ever hope to overcome that mighty God tuned at the core of dream and mind, when met in perfect state, at peak of all others? We think not!\n\n" +
+                        "Seriously, thy time is probably better spent elsewhere.";
+                default: return Language.Language.GetInternal(key, sheettitle);
+            }
         }
 
         private static void AfterSaveGameLoad(SaveGameData data) => AddComponent();
