@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System;
 using System.Linq;
 using HutongGames.PlayMaker;
 using HutongGames.PlayMaker.Actions;
@@ -254,13 +255,7 @@ namespace UltimatumRadiance
                 _spikeMasterControl.SetState("Spike Waves");
 
                 //Prevent ddark cheese; if you try to dive onto spikes you take damage
-                _spellControl.InsertAction("Q2 Land", new CallMethod
-                {
-                    behaviour = this,
-                    methodName = "DivePunishment",
-                    parameters = new FsmVar[0],
-                    everyFrame = false
-                }, 0);
+                AddDivePunishment();
 
                 //More generous orbs
                 _attackCommands.GetAction<Wait>("Orb Summon", 2).time = 1.5f;
@@ -301,10 +296,10 @@ namespace UltimatumRadiance
 
                 _spellControl.RemoveAction("Q2 Land", 0); //Revert ddark to normal behavior
 
-                _attackCommands.GetAction<SetIntValue>("Orb Antic", 1).intValue = 7; //Reset orbs
-                _attackCommands.GetAction<RandomInt>("Orb Antic", 2).min = 6;
-                _attackCommands.GetAction<RandomInt>("Orb Antic", 2).max = 8;
-                _attackCommands.GetAction<Wait>("Orb Summon", 2).time = 0.50f;
+                _attackCommands.GetAction<SetIntValue>("Orb Antic", 1).intValue = 6; //Reset orbs
+                _attackCommands.GetAction<RandomInt>("Orb Antic", 2).min = 5;
+                _attackCommands.GetAction<RandomInt>("Orb Antic", 2).max = 7;
+                _attackCommands.GetAction<Wait>("Orb Summon", 2).time = 0.60f;
 
                 //Beam sweepers cover a larger area
                 /*Normally the FSM handles this, but I'm modifying the numbers through code instead
@@ -344,15 +339,22 @@ namespace UltimatumRadiance
                 {
                     platSpikesSet = true;
                     GameObject.Find("Radiant Plat Small (10)").LocateMyFSM("radiant_plat").ChangeState(GetFsmEventByName(GameObject.Find("Radiant Plat Small (10)").LocateMyFSM("radiant_plat"), "SLOW VANISH"));
-                    _spellControl.InsertAction("Q2 Land", new CallMethod
-                    {
-                        behaviour = this,
-                        methodName = "DivePunishment",
-                        parameters = new FsmVar[0],
-                        everyFrame = false
-                    }, 0);
+                    AddDivePunishment();
                 }
             }
+        }
+
+        private IEnumerator AddDivePunishment()
+        {
+            yield return new WaitForSeconds(2); //Wait for spikes to go up
+            _spellControl.InsertAction("Q2 Land", new CallMethod
+            {
+                behaviour = this,
+                methodName = "DivePunishment", //Add a method to take damage to the player's dive FSM
+                parameters = new FsmVar[0],
+                everyFrame = false
+            }, 0);
+            yield break;
         }
 
         [UsedImplicitly]
