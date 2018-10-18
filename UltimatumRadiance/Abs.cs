@@ -170,7 +170,7 @@ namespace UltimatumRadiance
             _attackCommands.GetAction<SendEventByName>("EB 9", 8).delay = 0.6f;
             _attackCommands.GetAction<Wait>("EB 9", 9).time = 0.625f;
             _attackCommands.GetAction<SendEventByName>("Aim", 10).delay = 0.6f;
-            _attackCommands.GetAction<Wait>("Aim", 11).time = 0.625f;
+            _attackCommands.GetAction<Wait>("Aim", 11).time = 0.75f;
             _attackCommands.GetAction<Wait>("Eb Extra Wait", 0).time = 0.05f;
 
             //VERTICAL NAIL COMB
