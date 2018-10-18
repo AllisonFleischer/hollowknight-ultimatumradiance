@@ -1,14 +1,10 @@
 ﻿using System.Collections;
-using System;
-using System.Linq;
 using HutongGames.PlayMaker;
 using HutongGames.PlayMaker.Actions;
 using ModCommon.Util;
 using JetBrains.Annotations;
-using Modding;
 using UnityEngine;
 using Logger = Modding.Logger;
-using USceneManager = UnityEngine.SceneManagement.SceneManager;
 
 namespace UltimatumRadiance
 {
