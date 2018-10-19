@@ -324,28 +324,31 @@ namespace UltimatumRadiance
                 _beamsweeper2control.GetAction<iTweenMoveBy>("Beam Sweep R", 5).time = 5;
             }
 
-            if (_hm.hp < _phaseControl.FsmVariables.GetFsmInt("P5 Acend").Value - onePlatHealth)
+            if (gameObject.transform.position.y >= 150f)
             {
-                GameObject.Find("Radiant Plat Small (10)").LocateMyFSM("radiant_plat").ChangeState(GetFsmEventByName(GameObject.Find("Radiant Plat Small (10)").LocateMyFSM("radiant_plat"), "SLOW VANISH"));
-                if (!onePlatSet)
+                if (_hm.hp < _phaseControl.FsmVariables.GetFsmInt("P5 Acend").Value - onePlatHealth)
                 {
-                    onePlatSet = true;
-                    Log("Removing upper right platform");
-                    _attackCommands.GetAction<Wait>("Orb Summon", 2).time = 0.80f;
-                }
-            }
-            if (_hm.hp < _phaseControl.FsmVariables.GetFsmInt("P5 Acend").Value - onePlatHealth - platSpikesHealth)
-            {
-                _spikeClone.LocateMyFSM("Control").SendEvent("UP");
-                _spikeClone2.LocateMyFSM("Control").SendEvent("UP");
-                _spikeClone3.LocateMyFSM("Control").SendEvent("UP");
-                _spikeClone4.LocateMyFSM("Control").SendEvent("UP");
-                _spikeClone5.LocateMyFSM("Control").SendEvent("UP");
-                if (!platSpikesSet)
-                {
-                    platSpikesSet = true;
                     GameObject.Find("Radiant Plat Small (10)").LocateMyFSM("radiant_plat").ChangeState(GetFsmEventByName(GameObject.Find("Radiant Plat Small (10)").LocateMyFSM("radiant_plat"), "SLOW VANISH"));
-                    AddDivePunishment();
+                    if (!onePlatSet)
+                    {
+                        onePlatSet = true;
+                        Log("Removing upper right platform");
+                        _attackCommands.GetAction<Wait>("Orb Summon", 2).time = 0.80f;
+                    }
+                }
+                if (_hm.hp < _phaseControl.FsmVariables.GetFsmInt("P5 Acend").Value - onePlatHealth - platSpikesHealth)
+                {
+                    _spikeClone.LocateMyFSM("Control").SendEvent("UP");
+                    _spikeClone2.LocateMyFSM("Control").SendEvent("UP");
+                    _spikeClone3.LocateMyFSM("Control").SendEvent("UP");
+                    _spikeClone4.LocateMyFSM("Control").SendEvent("UP");
+                    _spikeClone5.LocateMyFSM("Control").SendEvent("UP");
+                    if (!platSpikesSet)
+                    {
+                        platSpikesSet = true;
+                        GameObject.Find("Radiant Plat Small (10)").LocateMyFSM("radiant_plat").ChangeState(GetFsmEventByName(GameObject.Find("Radiant Plat Small (10)").LocateMyFSM("radiant_plat"), "SLOW VANISH"));
+                        AddDivePunishment();
+                    }
                 }
             }
         }
