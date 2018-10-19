@@ -324,10 +324,11 @@ namespace UltimatumRadiance
                 _beamsweeper2control.GetAction<iTweenMoveBy>("Beam Sweep R", 5).time = 5;
             }
 
-            if (gameObject.transform.position.y >= 150f)
+            if (gameObject.transform.position.y >= 150f) //Indicates the final phase has started
             {
                 if (_hm.hp < _phaseControl.FsmVariables.GetFsmInt("P5 Acend").Value - onePlatHealth)
                 {
+                    //When the player deals some damage, remove the right platform
                     GameObject.Find("Radiant Plat Small (10)").LocateMyFSM("radiant_plat").ChangeState(GetFsmEventByName(GameObject.Find("Radiant Plat Small (10)").LocateMyFSM("radiant_plat"), "SLOW VANISH"));
                     if (!onePlatSet)
                     {
@@ -338,6 +339,7 @@ namespace UltimatumRadiance
                 }
                 if (_hm.hp < _phaseControl.FsmVariables.GetFsmInt("P5 Acend").Value - onePlatHealth - platSpikesHealth)
                 {
+                    //When the player deals some more damage, spikes on the left platform go up
                     _spikeClone.LocateMyFSM("Control").SendEvent("UP");
                     _spikeClone2.LocateMyFSM("Control").SendEvent("UP");
                     _spikeClone3.LocateMyFSM("Control").SendEvent("UP");
@@ -347,7 +349,7 @@ namespace UltimatumRadiance
                     {
                         platSpikesSet = true;
                         GameObject.Find("Radiant Plat Small (10)").LocateMyFSM("radiant_plat").ChangeState(GetFsmEventByName(GameObject.Find("Radiant Plat Small (10)").LocateMyFSM("radiant_plat"), "SLOW VANISH"));
-                        AddDivePunishment();
+                        AddDivePunishment(); //Dive cheese prevention here too
                     }
                 }
             }
