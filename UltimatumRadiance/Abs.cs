@@ -45,6 +45,8 @@ namespace UltimatumRadiance
         private const int onePlatHealth = 100;
         private const int platSpikesHealth = 150;
 
+        private const float nailWallDelay = .8f;
+
         /*        radiant spike x: 48.490002
                                 y: 21.180000
                                 z: -0.001010
@@ -180,6 +182,22 @@ namespace UltimatumRadiance
             _attackChoices.GetAction<Wait>("Nail Top Sweep", 4).time = 2.3f;
             _control.GetAction<Wait>("Rage Comb", 0).time = 0.6f;
 
+            //HORIZONTAL NAIL COMB
+            _attackChoices.GetAction<SendEventByName>("Nail L Sweep", 1).delay = .5f;
+            _attackChoices.GetAction<SendEventByName>("Nail L Sweep", 1).delay = .5f + (nailWallDelay * 2);
+            _attackChoices.GetAction<SendEventByName>("Nail L Sweep", 2).delay = .5f + (nailWallDelay * 4);
+            _attackChoices.GetAction<Wait>("Nail L Sweep", 3).time = 1f + (nailWallDelay * 5);
+            _attackChoices.GetAction<SendEventByName>("Nail R Sweep", 1).delay = .5f;
+            _attackChoices.GetAction<SendEventByName>("Nail R Sweep", 1).delay = .5f + (nailWallDelay * 2);
+            _attackChoices.GetAction<SendEventByName>("Nail R Sweep", 2).delay = .5f + (nailWallDelay * 4);
+            _attackChoices.GetAction<Wait>("Nail R Sweep", 3).time = 1f + (nailWallDelay * 5);
+            AddNailWall("Nail L Sweep", "COMB R", .5f + nailWallDelay, 1);
+            AddNailWall("Nail R Sweep", "COMB L", .5f + nailWallDelay, 1);
+            AddNailWall("Nail L Sweep", "COMB R", .5f + (nailWallDelay * 3), 1);
+            AddNailWall("Nail R Sweep", "COMB L", .5f + (nailWallDelay * 3), 1);
+            AddNailWall("Nail L Sweep 2", "COMB R2", 1, 1);
+            AddNailWall("Nail R Sweep 2", "COMB L2", 1, 1);
+
             Log("fin.");
 
         }
@@ -187,7 +205,7 @@ namespace UltimatumRadiance
         private void Update()
         {
             //Silly hack to get three waves of radial nails instead of two
-            //This feels really inefficient and I basically just threw numbers at the wall until it worked but uh, whatever
+            //This is a dumb way to do this but I don't care
             if (_attackCommands.FsmVariables.GetFsmBool("Repeated").Value) {
                 switch (CWRepeats)
                 {
@@ -355,6 +373,9 @@ namespace UltimatumRadiance
             }
         }
 
+        /// <summary>
+        /// Add behavior to the player's dive state ("Q2 Land") that deals damage. Behavior is added after a 2 second delay.
+        /// </summary>
         private IEnumerator AddDivePunishment()
         {
             yield return new WaitForSeconds(2); //Wait for spikes to go up
@@ -368,6 +389,9 @@ namespace UltimatumRadiance
             yield break;
         }
 
+        /// <summary>
+        /// Behavior added by AddDivePunishment that actually deals the damage.
+        /// </summary>
         [UsedImplicitly]
         public void DivePunishment()
         {
@@ -376,6 +400,26 @@ namespace UltimatumRadiance
             EventRegister.SendEvent("HERO DAMAGED"); //Tells the UI to refresh
         }
 
+        /// <summary>
+        /// Adds an action to a state that generates a nail wall. Only adds to states in Attack Choices.
+        /// </summary>
+        /// <param name="eventName">Either "COMB R" or "COMB L". Use "COMB R2" or "COMB L2" for platform phase.</param>
+        private void AddNailWall(string stateName, string eventName, float delay, int index)
+        {
+            _attackChoices.InsertAction(stateName, new SendEventByName
+            {
+                eventTarget = _attackChoices.GetAction<SendEventByName>("Nail L Sweep", 0).eventTarget, //Getting the event target from the fsm is hard, so let's just do it at runtime instead
+                sendEvent = eventName,
+                delay = delay,
+                everyFrame = false
+            }, index);
+        }
+
+        /// <summary>
+        /// Convert string to FsmEvent
+        /// </summary>
+        /// <param name="fsm">FSM to scan</param>
+        /// <param name="eventName">Name to search for</param>
         private static FsmEvent GetFsmEventByName(PlayMakerFSM fsm, string eventName)
         {
             foreach (FsmEvent t in fsm.FsmEvents)
