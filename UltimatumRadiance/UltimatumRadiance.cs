@@ -2,7 +2,9 @@
 using System.Reflection;
 using JetBrains.Annotations;
 using Modding;
-using UObject = UnityEngine.Object;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using USceneManager = UnityEngine.SceneManagement.SceneManager;
 
 namespace UltimatumRadiance
 {
@@ -13,19 +15,27 @@ namespace UltimatumRadiance
         // ReSharper disable once NotAccessedField.Global
         public static UltimatumRadiance Instance;
 
-        public override string GetVersion()
-        {
-            return FileVersionInfo.GetVersionInfo(Assembly.GetAssembly(typeof(UltimatumRadiance)).Location).FileVersion;
-        }
+        public UltimatumRadiance() : base("Ultimatum Radiance") { }
 
         public override void Initialize()
         {
             Instance = this;
 
             Log("Initalizing.");
-            ModHooks.Instance.AfterSavegameLoadHook += AfterSaveGameLoad;
-            ModHooks.Instance.NewGameHook += AddComponent;
+            USceneManager.activeSceneChanged += CheckForRadiance;
             ModHooks.Instance.LanguageGetHook += LangGet;
+        }
+
+
+        public override string GetVersion()
+        {
+            return FileVersionInfo.GetVersionInfo(Assembly.GetAssembly(typeof(UltimatumRadiance)).Location).FileVersion;
+        }
+
+        public void Unload()
+        {
+            USceneManager.activeSceneChanged -= CheckForRadiance;
+            ModHooks.Instance.LanguageGetHook -= LangGet;
         }
 
         private static string LangGet(string key, string sheettitle)
@@ -42,23 +52,15 @@ namespace UltimatumRadiance
             }
         }
 
-        private static void AfterSaveGameLoad(SaveGameData data) => AddComponent();
-
-        private static void AddComponent()
+        private static void CheckForRadiance(Scene from, Scene to)
         {
-            GameManager.instance.gameObject.AddComponent<AbsFinder>();
-        }
+            if (to.name != "GG_Radiance")
+            {
+                return;
+            }
 
-        public void Unload()
-        {
-            ModHooks.Instance.AfterSavegameLoadHook -= AfterSaveGameLoad;
-            ModHooks.Instance.NewGameHook -= AddComponent;
-            ModHooks.Instance.LanguageGetHook -= LangGet;
-
-            // ReSharper disable once Unity.NoNullPropogation
-            AbsFinder x = GameManager.instance?.gameObject.GetComponent<AbsFinder>();
-            if (x == null) return;
-            UObject.Destroy(x);
+            // ReSharper disable once ObjectCreationAsStatement
+            new GameObject("AbsFinder", typeof(AbsFinder));
         }
     }
 }

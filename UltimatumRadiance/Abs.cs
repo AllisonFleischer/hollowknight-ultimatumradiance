@@ -270,7 +270,7 @@ namespace UltimatumRadiance
                 _spikeMasterControl.SetState("Spike Waves");
 
                 //Prevent ddark cheese; if you try to dive onto spikes you take damage
-                AddDivePunishment();
+                StartCoroutine(AddDivePunishment());
 
                 //More generous orbs
                 _attackCommands.GetAction<Wait>("Orb Summon", 2).time = 1.5f;
@@ -367,7 +367,7 @@ namespace UltimatumRadiance
                     {
                         platSpikesSet = true;
                         GameObject.Find("Radiant Plat Small (10)").LocateMyFSM("radiant_plat").ChangeState(GetFsmEventByName(GameObject.Find("Radiant Plat Small (10)").LocateMyFSM("radiant_plat"), "SLOW VANISH"));
-                        AddDivePunishment(); //Dive cheese prevention here too
+                        StartCoroutine(AddDivePunishment()); //Dive cheese prevention here too
                     }
                 }
             }

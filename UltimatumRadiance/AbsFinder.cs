@@ -1,8 +1,4 @@
 ﻿using UnityEngine;
-using HutongGames.PlayMaker;
-using HutongGames.PlayMaker.Actions;
-using ModCommon.Util;
-using Logger = Modding.Logger;
 
 namespace UltimatumRadiance
 {
@@ -13,22 +9,25 @@ namespace UltimatumRadiance
 
         private void Start()
         {
-            Logger.Log("[Ultimatum Radiance] Added AbsFinder MonoBehaviour");
+            UltimatumRadiance.Instance.Log("Added AbsFinder MonoBehaviour");
         }
 
         private void Update()
         {
-            if (_abs == null) {
+            if (_abs == null)
+            {
                 _assigned = false;
                 _abs = GameObject.Find("Absolute Radiance");
             }
 
-            else if (!_assigned)
+            if (_assigned || _abs == null)
             {
-                _assigned = true;
-                Logger.Log("[Ultimatum Radiance] Found the Radiance!");
-                _abs.AddComponent<Abs>();
+                return;
             }
+
+            _assigned = true;
+            UltimatumRadiance.Instance.Log("Found the Radiance!");
+            _abs.AddComponent<Abs>();
         }
     }
 }
