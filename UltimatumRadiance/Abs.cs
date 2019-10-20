@@ -13,11 +13,7 @@ namespace UltimatumRadiance
         private GameObject _spikeMaster;
         private GameObject _spikeTemplate;
 
-        private GameObject _spikeClone;
-        private GameObject _spikeClone2;
-        private GameObject _spikeClone3;
-        private GameObject _spikeClone4;
-        private GameObject _spikeClone5;
+        private GameObject[] _spikes;
 
         private GameObject _beamsweeper;
         private GameObject _beamsweeper2;
@@ -71,6 +67,7 @@ namespace UltimatumRadiance
             _spikeMaster = GameObject.Find("Spike Control");
             _spikeMasterControl = _spikeMaster.LocateMyFSM("Control");
             _spikeTemplate = GameObject.Find("Radiant Spike");
+            _spikes = new GameObject[5];
 
             _beamsweeper = GameObject.Find("Beam Sweeper");
             _beamsweeper2 = Instantiate(_beamsweeper);
@@ -96,31 +93,14 @@ namespace UltimatumRadiance
 
             //PLATFORM SPIKES
             //Create spikes on top platform
-            _spikeClone = Instantiate(_spikeTemplate);
-            _spikeClone.transform.SetPositionX(58f);
-            _spikeClone.transform.SetPositionY(153.8f);
+            for(int i = 0; i < _spikes.Length; i++)
+            {
+                Vector2 pos = new Vector2(57f + i/2f,153.8f);
 
-            _spikeClone2 = Instantiate(_spikeTemplate);
-            _spikeClone2.transform.SetPositionX(57.5f);
-            _spikeClone2.transform.SetPositionY(153.8f);
-
-            _spikeClone3 = Instantiate(_spikeTemplate);
-            _spikeClone3.transform.SetPositionX(57f);
-            _spikeClone3.transform.SetPositionY(153.8f);
-
-            _spikeClone4 = Instantiate(_spikeTemplate);
-            _spikeClone4.transform.SetPositionX(58.5f);
-            _spikeClone4.transform.SetPositionY(153.8f);
-
-            _spikeClone5 = Instantiate(_spikeTemplate);
-            _spikeClone5.transform.SetPositionX(59f);
-            _spikeClone5.transform.SetPositionY(153.8f);
-
-            _spikeClone.LocateMyFSM("Control").SendEvent("DOWN");
-            _spikeClone2.LocateMyFSM("Control").SendEvent("DOWN");
-            _spikeClone3.LocateMyFSM("Control").SendEvent("DOWN");
-            _spikeClone4.LocateMyFSM("Control").SendEvent("DOWN");
-            _spikeClone5.LocateMyFSM("Control").SendEvent("DOWN");
+                _spikes[i] = Instantiate(_spikeTemplate);
+                _spikes[i].transform.SetPosition2D(pos);
+                _spikes[i].LocateMyFSM("Control").SendEvent("DOWN");
+            }
 
             //ORB BARRAGE
             _attackCommands.GetAction<Wait>("Orb Antic", 0).time = .75f; //INCREASE wait time at start of orb barrage, to increase chance player isn't in a nail wall or something
@@ -239,31 +219,15 @@ namespace UltimatumRadiance
                 fullSpikesSet = true;
 
                 //Spikes cover the whole arena!
-                _spikeMasterControl.GetAction<SendEventByName>("Spikes Left", 0).sendEvent = "UP";
-                _spikeMasterControl.GetAction<SendEventByName>("Spikes Left", 1).sendEvent = "UP";
-                _spikeMasterControl.GetAction<SendEventByName>("Spikes Left", 2).sendEvent = "UP";
-                _spikeMasterControl.GetAction<SendEventByName>("Spikes Left", 3).sendEvent = "UP";
-                _spikeMasterControl.GetAction<SendEventByName>("Spikes Left", 4).sendEvent = "UP";
-
-                _spikeMasterControl.GetAction<SendEventByName>("Spikes Right", 0).sendEvent = "UP";
-                _spikeMasterControl.GetAction<SendEventByName>("Spikes Right", 1).sendEvent = "UP";
-                _spikeMasterControl.GetAction<SendEventByName>("Spikes Right", 2).sendEvent = "UP";
-                _spikeMasterControl.GetAction<SendEventByName>("Spikes Right", 3).sendEvent = "UP";
-                _spikeMasterControl.GetAction<SendEventByName>("Spikes Right", 4).sendEvent = "UP";
-
-                _spikeMasterControl.GetAction<SendEventByName>("Wave L", 2).sendEvent = "UP";
-                _spikeMasterControl.GetAction<SendEventByName>("Wave L", 3).sendEvent = "UP";
-                _spikeMasterControl.GetAction<SendEventByName>("Wave L", 4).sendEvent = "UP";
-                _spikeMasterControl.GetAction<SendEventByName>("Wave L", 5).sendEvent = "UP";
-                _spikeMasterControl.GetAction<SendEventByName>("Wave L", 6).sendEvent = "UP";
+                for (int i = 0; i < 5; i++)
+                {
+                    _spikeMasterControl.GetAction<SendEventByName>("Spikes Left", i).sendEvent = "UP";
+                    _spikeMasterControl.GetAction<SendEventByName>("Spikes Right", i).sendEvent = "UP";
+                    _spikeMasterControl.GetAction<SendEventByName>("Wave L", i + 2).sendEvent = "UP";
+                    _spikeMasterControl.GetAction<SendEventByName>("Wave R", i + 2).sendEvent = "UP";
+                }
                 _spikeMasterControl.GetAction<WaitRandom>("Wave L", 7).timeMin = 0.1f;
                 _spikeMasterControl.GetAction<WaitRandom>("Wave L", 7).timeMax = 0.1f;
-
-                _spikeMasterControl.GetAction<SendEventByName>("Wave R", 2).sendEvent = "UP";
-                _spikeMasterControl.GetAction<SendEventByName>("Wave R", 3).sendEvent = "UP";
-                _spikeMasterControl.GetAction<SendEventByName>("Wave R", 4).sendEvent = "UP";
-                _spikeMasterControl.GetAction<SendEventByName>("Wave R", 5).sendEvent = "UP";
-                _spikeMasterControl.GetAction<SendEventByName>("Wave R", 6).sendEvent = "UP";
                 _spikeMasterControl.GetAction<WaitRandom>("Wave R", 7).timeMin = 0.1f;
                 _spikeMasterControl.GetAction<WaitRandom>("Wave R", 7).timeMax = 0.1f;
 
@@ -358,11 +322,11 @@ namespace UltimatumRadiance
                 if (_hm.hp < _phaseControl.FsmVariables.GetFsmInt("P5 Acend").Value - onePlatHealth - platSpikesHealth)
                 {
                     //When the player deals some more damage, spikes on the left platform go up
-                    _spikeClone.LocateMyFSM("Control").SendEvent("UP");
-                    _spikeClone2.LocateMyFSM("Control").SendEvent("UP");
-                    _spikeClone3.LocateMyFSM("Control").SendEvent("UP");
-                    _spikeClone4.LocateMyFSM("Control").SendEvent("UP");
-                    _spikeClone5.LocateMyFSM("Control").SendEvent("UP");
+                    foreach(GameObject spike in _spikes)
+                    {
+                        spike.LocateMyFSM("Control").SendEvent("UP");
+                    }
+
                     if (!platSpikesSet)
                     {
                         platSpikesSet = true;
